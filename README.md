@@ -14,6 +14,8 @@ Sending money across Africa is expensive. The UN Sustainable Development Goal 10
 
 ## 📊 Dashboard Preview
 
+<img width="976" height="551" alt="dashboard_preview png" src="https://github.com/user-attachments/assets/520df42b-9818-412a-8ea2-6a5a61fb9a41" />
+
 ![Africa Remittance Cost Dashboard](dashboard_preview.png)
 
 > Built in Power BI, connected live to PostgreSQL.
