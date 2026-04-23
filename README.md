@@ -1,6 +1,6 @@
 # 🌍 Africa Remittance Cost Analysis
 
-A end-to-end data pipeline and analytics project analyzing the cost of sending money to, from, and within Africa — using real World Bank data spanning 2016 to 2025.
+An end-to-end data pipeline and analytics project analyzing the cost of sending money to, from, and within Africa — using real World Bank data spanning 2016 to 2025.
 
 ---
 
