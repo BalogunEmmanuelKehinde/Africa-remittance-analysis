@@ -88,7 +88,7 @@ df = pd.read_excel('world_bank_2025.xlsx', sheet_name='Dataset (from Q2 2016)')
 
 # 1. Database Credentials
 DB_USER = 'postgres'
-DB_PASS = 'elric' # Change to your actual pgAdmin password
+DB_PASS = 'your-password' # Change to your actual pgAdmin password
 DB_NAME = 'remittance_db'  # Ensure this database exists in pgAdmin
 
 # 2. Create the Connection
