@@ -1,22 +1,32 @@
 # 🌍 Africa Remittance Cost Analysis
 
-An end-to-end data pipeline and analytics project analyzing the cost of sending money to, from, and within Africa — using real World Bank data spanning 2016 to 2025.
+An end-to-end data pipeline and investigative analytics project examining the true cost of sending money to, from, and within Africa — using real World Bank data spanning 2016 to 2025.
 
 ---
 
-## 📌 The Problem
+## 📌 The Finding That Started Everything
 
-Sending money across Africa is expensive. The UN Sustainable Development Goal 10.c targets remittance costs below **3% by 2030**. This project uses nearly a decade of quarterly data to ask: *how far off is Africa from that target — and who is responsible for the gap?*
+> A Tanzanian bank charges **91%** to send money to Uganda.
+> Western Union charges **8%** on the exact same route.
+> Same corridor. Same quarter. 10x the price.
 
-**Key finding:** Intra-Africa transfers average **14.21%** in fees — more than double the cost of inbound transfers from the rest of the world (**6.56%**). Africa is nowhere near the 3% SDG target.
+This project was built to understand why — and whether Africa is on track to meet the UN SDG 10.c target of **3% remittance costs by 2030**.
+
+**Spoiler: The trend is going the wrong direction.**
 
 ---
 
 ## 📊 Dashboard Preview
 
-<img width="976" height="551" alt="dashboard_preview png" src="https://github.com/user-attachments/assets/520df42b-9818-412a-8ea2-6a5a61fb9a41" />
+### Page 1 — The Big Picture
+<img width="976" height="551" alt="dashboard_preview png" src="https://github.com/user-attachments/assets/afc2e9de-f1fe-430d-abec-c2a937667492" />
 
 ![Africa Remittance Cost Dashboard](dashboard_preview.png)
+
+### Page 4 — The Deep Dive
+<img width="888" height="498" alt="dashb board page 4" src="https://github.com/user-attachments/assets/e720f26b-d2c7-42f3-863a-d61e4b0df739" />
+
+![Deep Dive](deep_dive_preview.png)
 
 > Built in Power BI, connected live to PostgreSQL.
 
@@ -33,7 +43,7 @@ World Bank Excel (47,000+ rows)
         ↓
    main.py (FastAPI)     ← REST API serving analytics endpoints
         ↓
-   Power BI Dashboard    ← Live visualization layer
+   Power BI Dashboard    ← 4-page live visualization layer
 ```
 
 ---
@@ -43,11 +53,11 @@ World Bank Excel (47,000+ rows)
 ```
 africa-remittance-analysis/
 │
-├── clean_data.py              # Data cleaning & ingestion pipeline
-├── check_sheets.py            # Data validation & column inspection
-├── main.py                    # FastAPI application
-├── africa_remittances_clean.csv  # Cleaned Africa-filtered dataset
-├── requirements.txt           # Python dependencies
+├── clean_data.py                  # Data cleaning & ingestion pipeline
+├── check_sheets.py                # Data validation & column inspection
+├── main.py                        # FastAPI application
+├── queries.sql                    # Key analytical queries
+├── africa_remittances_clean.csv   # Cleaned Africa-filtered dataset
 └── README.md
 ```
 
@@ -58,6 +68,7 @@ africa-remittance-analysis/
 ### 1. Ingestion & Cleaning (`clean_data.py`)
 - Loads the World Bank Remittance Prices Worldwide dataset (Excel)
 - Filters for all Africa-related corridors bidirectionally — rows where Africa is either the source or destination
+- Removes promotional noise (negative cost percentages) that would distort analysis
 - Classifies each transaction into one of three flow types:
   - `Intra-Africa` — both source and destination are African countries
   - `Outbound (Africa to World)` — African source, non-African destination
@@ -85,7 +96,7 @@ africa-remittance-analysis/
 | total_cost_pct | float | Total cost as % of transfer amount |
 
 ### 3. API Layer (`main.py`)
-Built with **FastAPI**. Four endpoints:
+Built with **FastAPI**. Five endpoints:
 
 | Endpoint | Description |
 |---|---|
@@ -96,20 +107,43 @@ Built with **FastAPI**. Four endpoints:
 | `GET /analytics/firm-type-deep-dive` | Banks vs MTOs vs Hybrids comparison |
 
 ### 4. Visualization (Power BI)
-Three-page interactive dashboard connected live to PostgreSQL:
+Four-page interactive dashboard connected live to PostgreSQL:
 
-- **Page 1 — The Big Picture:** KPI cards, cost by flow type, 2016–2025 trend line
-- **Page 2 — Who Is Charging What:** Firm type comparison, fee vs FX margin breakdown, firm pricing table
+- **Page 1 — The Big Picture:** KPI cards (14.21% / 6.56% / 14.98%), cost by flow type, 2016–2025 trend line
+- **Page 2 — Who Is Charging What:** Firm type comparison, fee vs FX margin breakdown, full firm pricing table
 - **Page 3 — Corridor Explorer:** Interactive slicers, cheapest corridors table, corridor cost heatmap
+- **Page 4 — The Deep Dive:** Tanzania → Uganda provider comparison, 2023–2025 quarterly trend
 
 ---
 
 ## 🔑 Key Findings
 
-- **Intra-Africa transfers (14.21%)** cost more than twice inbound transfers (6.56%) — despite shorter distances
-- **Traditional Banks (avg ~16%)** consistently charge more than Digital MTOs
-- **The SDG 10.c 3% target** remains far out of reach across all three flow types as of Q1 2025
-- **Intra-Africa costs have not meaningfully declined** over the 9-year period, suggesting structural barriers beyond competition
+### Finding 1 — The Headline Gap
+Sending money **into** Africa from the world (6.56%) costs less than half of sending money **within** Africa (14.21%). Despite shorter distances, intra-Africa transfers are dramatically more expensive.
+
+### Finding 2 — Costs Are Getting Worse, Not Better
+When drilling into recent quarterly data, Intra-Africa costs are **rising**:
+
+| Period | Intra-Africa | Inbound | Outbound |
+|---|---|---|---|
+| 2023_1Q | 15.41% | 6.66% | 12.10% |
+| 2024_1Q | 14.41% | 5.84% | 16.76% |
+| 2024_4Q | 15.37% | 6.08% | 15.14% |
+| 2025_1Q | **17.14%** | 6.02% | 15.12% |
+
+The UN SDG 10.c target is **3% by 2030**. Every flow type remains 2–5x above that target with 4 years remaining.
+
+### Finding 3 — The Smoking Gun (Tanzania → Uganda, Q1 2025)
+| Provider | Type | Avg Cost |
+|---|---|---|
+| National Bank of Commerce (NBC) | Bank | 91% |
+| Stanbic Bank | Bank | 76% |
+| CRDB Bank | Bank | 73% |
+| NMB Bank | Bank | 70% |
+| Western Union | MTO | 8% |
+| MoneyGram | MTO | 8% |
+
+MTOs operate profitably at 8% on the exact corridors where banks charge 70–91%. **This is not a structural cost problem. It is a competition and consumer awareness problem.**
 
 ---
 
@@ -157,7 +191,8 @@ Connect to PostgreSQL → `localhost` → `remittance_db` → `africa_remittance
 
 🔗 https://remittanceprices.worldbank.org/
 
-City night scene. Retrieved from Freepik. Used for presentation purposes only.
+**Dashboard Background Image**
+> City night scene. Retrieved from [Freepik](https://www.freepik.com). Used for presentation purposes only.
 
 ---
 
@@ -165,4 +200,4 @@ City night scene. Retrieved from Freepik. Used for presentation purposes only.
 
 **Emmanuel Balogun**
 Data Analyst | Lagos, Nigeria
-[LinkedIn](https://linkedin.com/in/emmanuel-balogun-kehinde) · [GitHub](https://github.com/BalogunEmmanuelKehinde)
+[LinkedIn](https://linkedin.com/in/) · [GitHub](https://github.com/BalogunEmmanuelKehinde)
