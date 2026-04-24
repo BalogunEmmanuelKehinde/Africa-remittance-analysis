@@ -196,6 +196,15 @@ Connect to PostgreSQL → `localhost` → `remittance_db` → `africa_remittance
 
 ---
 
+## ⚠️ Disclaimer
+This project is for educational and portfolio purposes only. 
+All data is sourced from the World Bank Remittance Prices Worldwide 
+public dataset. Findings reflect dataset averages and should not be 
+used as financial advice. Individual transfer costs may vary by 
+provider, amount, and time of transaction.
+
+---
+
 ## 👤 Author
 
 **Emmanuel Balogun**
